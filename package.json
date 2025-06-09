@@ -1,8 +1,14 @@
 {
   "name": "@siliconjungle/hsl-palette-generator",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Tiny procedural HSL palette generator",
-  "keywords": ["color", "palette", "hsl", "procedural", "generator"],
+  "keywords": [
+    "color",
+    "palette",
+    "hsl",
+    "procedural",
+    "generator"
+  ],
   "author": "James Addison",
   "license": "MIT",
   "type": "module",
