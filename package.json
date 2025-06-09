@@ -1,5 +1,5 @@
 {
-  "name": "hsl-palette-generator",
+  "name": "@siliconjungle/hsl-palette-generator",
   "version": "1.0.0",
   "description": "Tiny procedural HSL palette generator",
   "keywords": ["color", "palette", "hsl", "procedural", "generator"],
@@ -8,6 +8,10 @@
   "type": "module",
   "main": "./src/palette-generator.js",
   "exports": "./src/palette-generator.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/siliconjungle/hsl-palette-generator.git"
+  },
   "scripts": {
     "test": "echo \"No tests yet\""
   }
