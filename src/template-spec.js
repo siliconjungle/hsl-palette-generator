@@ -1,45 +1,67 @@
-/* spec.simple-hsl-palette.js  – MCP wrapper for “simple-hsl-palette” */
+/* spec.simple-hsl-palette.js – MCP wrapper for “simple-hsl-palette”
+ * Accepts flexible inputs for hue/saturation/lightness:
+ *   • number          → {min:n, max:n}
+ *   • [min,max] array → {min,max}
+ *   • {min,max} object (original form)
+ */
 
-import { nanoid } from 'nanoid';
-import { z }      from 'zod';
+import { nanoid }          from 'nanoid';
+import { z }               from 'zod';
 import { generatePalette } from './palette-generator.js';
 
-/*───────── helpers ───────────────────────────────────────────────────*/
+/* ═════════ helpers ════════════════════════════════════════════════ */
 export const makeResult = (v) => ({
-  content: [
-    {
-      type: 'text',
-      text: typeof v === 'string' ? v : JSON.stringify(v, null, 2),
-    },
-  ],
+  content: [{ type: 'text', text: typeof v === 'string' ? v : JSON.stringify(v, null, 2) }],
 });
 
-/*───────── parameter shapes ──────────────────────────────────────────*/
-const RangeShape = {
-  min: z.number().describe('Inclusive lower bound.'),
-  max: z.number().describe('Inclusive upper bound.'),
+/* Normalise any accepted form into {min,max} */
+const normRange = (raw, label) => {
+  if (raw == null) return undefined;
+  if (typeof raw === 'number')                        return { min: raw, max: raw };
+  if (Array.isArray(raw) && raw.length === 2)         return { min: raw[0], max: raw[1] };
+  if (typeof raw === 'object' && 'min' in raw && 'max' in raw) return raw;
+  throw new TypeError(`"${label}" must be number, [min,max], or {min,max}`);
 };
 
-const PaletteOptionsShape = {
-  count      : z.number().int().min(1).describe('Number of colours (≥ 1)').optional(),
-  hue        : z.object(RangeShape).describe('Hue range in degrees (0 – 360)').optional(),
-  saturation : z.object(RangeShape).describe('Saturation range in % (0 – 100)').optional(),
-  lightness  : z.object(RangeShape).describe('Lightness range in % (0 – 100)').optional(),
+/* ═════════ Zod shapes ═════════════════════════════════════════════ */
+const SingleNum   = z.number();
+const NumTuple2   = z.tuple([z.number(), z.number()]);
+const RangeObject = z.object({ min: z.number(), max: z.number() });
+const RangeUnion  = z.union([SingleNum, NumTuple2, RangeObject]);
+
+const RANGE_DESC =
+  'Accepts one of:\n' +
+  '• number → fixed value\n' +
+  '• [min,max] → inclusive range\n' +
+  '• {min,max} → inclusive range';
+
+const PaletteOptsShape = {
+  count: z.number().int().min(1).optional()
+          .describe('How many colours to return (≥ 1).'),
+  hue: RangeUnion.optional().describe(`Hue in degrees (0–360). ${RANGE_DESC}`),
+  saturation: RangeUnion.optional().describe(`Saturation in % (0–100). ${RANGE_DESC}`),
+  lightness: RangeUnion.optional().describe(`Lightness in % (0–100). ${RANGE_DESC}`),
 };
 
-/*───────── spec object ───────────────────────────────────────────────*/
+/* ═════════ spec ═══════════════════════════════════════════════════ */
 export const spec = {
   id         : 'simple-hsl-palette',
   instanceId : nanoid(),
-  description: 'Generate evenly spaced HSL colour palettes.',
+  description: 'Generate evenly-spaced HSL colour palettes. ' +
+               'Hue/Sat/Light inputs may be number, [min,max], or {min,max}.',
 
   tools: [
-    /* TOOL: generatePalette -----------------------------------------*/
     {
       name       : 'generatePalette',
       description: 'Return an array of HSL strings forming a smooth palette.',
-      parameters : PaletteOptionsShape,
-      async execute(opts) {
+      parameters : PaletteOptsShape,
+      async execute(args) {
+        const opts = {
+          ...args,
+          hue        : normRange(args.hue,        'hue'),
+          saturation : normRange(args.saturation, 'saturation'),
+          lightness  : normRange(args.lightness,  'lightness'),
+        };
         return makeResult(generatePalette(opts));
       },
     },
