@@ -1,13 +1,3 @@
-// Directory structure:
-//
-// simple-hsl-palette/
-// ├─ package.json
-// ├─ README.md
-// └─ src/
-//    ├─ index.js
-//    └─ palette-generator.js
-
-// src/index.js
 export * from './palette-generator.js';
 
 // src/palette-generator.js

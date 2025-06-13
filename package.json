@@ -1,23 +1,19 @@
 {
-  "name": "@siliconjungle/hsl-palette-generator",
-  "version": "1.0.3",
-  "description": "Tiny procedural HSL palette generator",
-  "keywords": [
-    "color",
-    "palette",
-    "hsl",
-    "procedural",
-    "generator"
-  ],
-  "author": "James Addison",
-  "license": "MIT",
+  "name": "mcp-palette-generator-server",
+  "version": "0.1.0",
+  "description": "MCP server for hsl palette generator.",
   "type": "module",
-  "main": "./palette-generator.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/siliconjungle/hsl-palette-generator.git"
+  "license": "MIT",
+  "bin": {
+    "mcp-template": "src/index.js"
   },
   "scripts": {
-    "test": "echo \"No tests yet\""
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.11.2",
+    "nanoid": "^5.1.5",
+    "zod": "^3.22.4",
+    "zod-to-json-schema": "^3.23.5"
   }
 }
